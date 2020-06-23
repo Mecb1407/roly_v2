@@ -1,6 +1,8 @@
 # Roly_v2
 Roly es un robot con diversas aplicaciones, en este caso será controlado por un dispositivo haptico para aplicaciones en la agricultura. Este será equipado con diversos sensores entre esos kinect y como actuador un brazo robotico.
+
 Universidad de Pamplona - Colombia
+
 Ingenieria Mecatronica
 
 Para la ejecucion de este proyecto, basta con ejecutar en la linea de comandos (roslaunch roly_v2 spawm.launch)
