@@ -1,7 +1,8 @@
 <?xml version="1.0" ?>
 <launch>
 
-	<param name="robot_description" command="cat '$(find roly)/urdf/roly.xacro'"/>
+	<!--param name="robot_description" command="cat '$(find roly_v2)/urdf/roly_v2.xacro'"/-->
+	 <param name="robot_description" command="$(find xacro)/xacro.py '$(find roly_v2)/urdf/roly_v2.xacro'"/>
 
 	<!-- send fake joint values-->
 
@@ -15,7 +16,7 @@
 
 	<!-- Show in Rviz  -->
 
-	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find roly)/rviz/roly.rviz"/>
+	<node name="rviz" pkg="rviz" type="rviz"/>
 
 </launch>
 

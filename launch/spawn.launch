@@ -1,40 +1,45 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<launch>
+<?xml version="1.0"?>
 	
+	<launch>
+		
+		<rosparam command="load" file="$(find roly_v2)/config/control.yaml"/>
 
+		<group if="$(optenv ROLY_V2_CONTROL_EXTRAS 0)" >
+	    <rosparam command="load" file="$(env ROLY_V2_CONTROL_EXTRAS_PATH)" />
+	    </group>
 
-	<rosparam command="load" file="$(find roly_v2)/config/control.yaml"/>
+	  	<node name="controller_spawner" pkg="controller_manager" type="spawner"
 
-	<group if="$(optenv ROLY_V2_CONTROL_EXTRAS 0)" >
-    <rosparam command="load" file="$(env ROLY_V2_CONTROL_EXTRAS_PATH)" />
-    </group>
+	          args="roly_v2_joint_publisher roly_v2_velocity_controller" />
 
-  	<node name="controller_spawner" pkg="controller_manager" type="spawner"
+		<!--param name="robot_description" command="cat '$(find roly_v2)/urdf/roly_v2.xacro'"/-->
+		<param name="robot_description" command="$(find xacro)/xacro.py '$(find roly_v2)urdf/roly_v2.xacro'"/>
 
-          args="roly_v2_joint_publisher roly_v2_velocity_controller" />
+		<arg name="x" default="0"/>
+		<arg name="y" default="0"/>
+		<arg name="z" default="0"/>
 
-	<param name="robot_description" command="cat '$(find roly_v2)/urdf/roly_v2.xacro'"/>
+		
+		<include file="$(find gazebo_ros)/launch/empty_world.launch"></include>
+		
+		<arg name="public_interface" value="$(find roly_v2)/config/public_interface.yaml"/>
+		<arg name="gazebo_interface" value="$(find roly_v2)/config/gazebo_interface.yaml"/>
 
-	<arg name="x" default="0"/>
-	<arg name="y" default="0"/>
-	<arg name="z" default="0"/>
+		<node name="roly_v2_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" 
+			  args="-urdf -param robot_description -model roly_v2 -x $(arg x) -y $(arg y) -z $(arg z) "/>
 
-	
-	<include file="$(find gazebo_ros)/launch/empty_world.launch"></include>
+		<node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
+	    
+	    <rosparam command="load" file="$(find roly_v2)/config/localization.yaml" />
+	    
+	    </node>
 
-	<node name="roly_v2_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" 
-		  args="-urdf -param robot_description -model roly_v2 -x $(arg x) -y $(arg y) -z $(arg z) "/>
+		<node pkg="twist_mux" type="twist_mux" name="twist_mux">
+	    <rosparam command="load" file="$(find roly_v2)/config/twist_mux.yaml" />
+	    <remap from="cmd_vel_out" to="roly_v2_velocity_controller/cmd_vel"/>
+	  </node>
 
-	<!--node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
-    <rosparam command="load" file="$(find roly)/config/localization.yaml" />
-  </node-->
-
-	<node pkg="twist_mux" type="twist_mux" name="twist_mux">
-    <rosparam command="load" file="$(find roly_v2)/config/twist_mux.yaml" />
-    <remap from="cmd_vel_out" to="roly_v2_velocity_controller/cmd_vel"/>
-  </node>
-
-</launch>
+	</launch>
 
 
 

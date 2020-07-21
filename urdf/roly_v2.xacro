@@ -1,254 +1,219 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<robot name="roly_v2" xmlns:xacro="http://www.ros.org/wiki/xacro">
+ <robot name="roly_v2" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:property name="camera_link" value="0.05" /> <!-- Size of square 'camera' box -->
-  
+      
+      <xacro:property name="camera_link" value="0.05" /> <!-- Size of square 'camera' box -->
 
-  <material name="black"><color rgba="0.0 0.0 0.0 1.0"/></material>
-  <material name="blue"><color rgba="0.203125 0.23828125 0.28515625 1.0"/></material>
-  <material name="green"><color rgba="0.0 0.8 0.0 1.0"/></material>
-  <material name="grey"><color rgba="0.2 0.2 0.2 1.0"/></material>
-  <material name="orange"><color rgba="1.0 0.423529411765 0.0392156862745 1.0"/></material>
-  <material name="brown"><color rgba="0.870588235294 0.811764705882 0.764705882353 1.0"/></material>
-  <material name="red"><color rgba="0.80078125 0.12890625 0.1328125 1.0"/></material>
-  <material name="white"><color rgba="1.0 1.0 1.0 1.0"/></material>
+      <!-- Included URDF/XACRO Files -->
+      <xacro:include filename="$(find roly_v2)/urdf/wheel.urdf.xacro" />
 
-  <gazebo>
-<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-<robotNamespace>/</robotNamespace>
-<legacynodens>true</legacynodens>
-</plugin>
-</gazebo>
-  
- <!--*******************************************--> 
+      <xacro:property name="M_PI" value="3.14159"/>
 
-  <link name="base_link">
-    <visual>
-      <origin xyz="-0.5 0 0.4" rpy="3.1416 -1.57 0" />
-      <geometry>
-        <mesh filename="package://roly_v2/meshes/base_link.dae" />
-      </geometry>
-    </visual>
+      <material name="black"><color rgba="0.0 0.0 0.0 1.0"/></material>
+      <material name="blue"><color rgba="0.203125 0.23828125 0.28515625 1.0"/></material>
+      <material name="green"><color rgba="0.0 0.8 0.0 1.0"/></material>
+      <material name="grey"><color rgba="0.2 0.2 0.2 1.0"/></material>
+      <material name="orange"><color rgba="1.0 0.423529411765 0.0392156862745 1.0"/></material>
+      <material name="brown"><color rgba="0.870588235294 0.811764705882 0.764705882353 1.0"/></material>
+      <material name="red"><color rgba="0.80078125 0.12890625 0.1328125 1.0"/></material>
+      <material name="white"><color rgba="1.0 1.0 1.0 1.0"/></material>
 
-    <visual>
-      <origin xyz="-0.045 -0.35 0.04" rpy="-1.57 -3.1416 0" />
-      <geometry>
-        <mesh filename="package://roly_v2/meshes/porta1.dae" />
-      </geometry>
-    </visual>
+
+      
+     <!--*******************************************--> 
+
+     <!-- Wheel Mounting Positions -->
+    <xacro:property name="wheelbase" value="0.276" />
+    <xacro:property name="track" value="0.22" />
+    <xacro:property name="wheel_vertical_offset" value="0.03282" />
+
+       <!-- Wheel Properties -->
+    <xacro:property name="wheel_length" value="0.0741359" />
+    <xacro:property name="wheel_radius" value="0.106478" />
+
+    <xacro:arg name="kinect_xyz" default="$(optenv HUSKY_KINECT_XYZ 0.13 0.045 0.22)" />
+    <xacro:arg name="kinect_rpy" default="$(optenv HUSKY_KINECT_RPY 0 0.2 ${2*M_PI})" />
+
+  <!--****************************************************************************************-->
+  <!--Base link-->
+
+      <link name="base_link">
+        <visual>
+          <origin xyz="-0.5 0 0.4" rpy="3.1416 -1.57 0" />
+          <geometry>
+            <mesh filename="package://roly_v2/meshes/base_link.dae" />
+          </geometry>
+        </visual>
+
+        <visual>
+          <origin xyz="-0.045 -0.35 0.04" rpy="-1.57 -3.1416 0" />
+          <geometry>
+            <mesh filename="package://roly_v2/meshes/porta1.dae" />
+          </geometry>
+        </visual>
+
+        
+        <visual>
+          <origin xyz="-0.045 -0.09 0.04" rpy="-1.57 -3.1416 0" />
+          <geometry>
+            <mesh filename="package://roly_v2/meshes/porta1.dae" />
+          </geometry>
+        </visual>
+
+        <visual>
+          <origin xyz="-0.055 0.195 0.134" rpy="0 0 3.1416" />
+          <geometry>
+            <mesh filename="package://roly_v2/meshes/ejepivote.dae" />
+          </geometry>
+        </visual>
+
+
+        <collision name="collision_base">
+          <origin xyz="-0.05 0.04 0.22" rpy="0 0 0" />
+          <geometry>
+            <box size="0.5 0.3 0.07"/>
+          </geometry>
+        </collision>
+      </link>
+
+          <link name="inertial_link">
+          <inertial>
+          <mass value="5"/>
+          <origin rpy="0 0 0" xyz="-0.03 0.04 0.225"/>
+          <inertia ixx="0.0395416666667" ixy="0" ixz="0" iyy="0.106208333333" iyz="0" izz="0.1416666667"/>
+        </inertial>
+
+        </link>
+
+        <joint name="inertial_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <parent link="base_link" />
+        <child link="inertial_link" />
+      </joint>
+
 
     
-    <visual>
-      <origin xyz="-0.045 -0.09 0.04" rpy="-1.57 -3.1416 0" />
-      <geometry>
-        <mesh filename="package://roly_v2/meshes/porta1.dae" />
-      </geometry>
-    </visual>
+    
 
-    <visual>
-      <origin xyz="-0.055 0.195 0.134" rpy="0 0 3.1416" />
-      <geometry>
-        <mesh filename="package://roly_v2/meshes/ejepivote.dae" />
-      </geometry>
-    </visual>
+  <!--*********************************************************************************************-->
+
+        <!-- Husky wheel macros -->
+    <xacro:roly_wheel wheel_prefix="front_left">
+      <origin xyz="${wheelbase/2} ${track} ${wheel_vertical_offset}" rpy="0 0 0" />
+    </xacro:roly_wheel>
+    <xacro:roly_wheel wheel_prefix="front_right">
+      <origin xyz="${wheelbase/2} ${track - 0.36} ${wheel_vertical_offset}" rpy="0 0 0" />
+    </xacro:roly_wheel>
+    <xacro:roly_wheel wheel_prefix="rear_left">
+      <origin xyz="${-(wheelbase-0.031)} ${track} ${wheel_vertical_offset}" rpy="0 0 0" />
+    </xacro:roly_wheel>
+    <xacro:roly_wheel wheel_prefix="rear_right">
+      <origin xyz="${-(wheelbase-0.031)} ${track - 0.36} ${wheel_vertical_offset}" rpy="0 0 0" />
+    </xacro:roly_wheel>
 
 
-    <collision name="collision_base">
-      <origin xyz="0 0 0.23" rpy="0 0 0" />
-      <geometry>
-        <box size="0.5 0.3 0.07"/>
-      </geometry>
-    </collision>
-  </link>
+  <!--*******************************************************************************************-->
 
-      <link name="inertial_link">
-      <inertial>
-      <mass value="5"/>
-      <origin rpy="0 0 0" xyz="-0.03 0.04 0.225"/>
-      <inertia ixx="0.0395416666667" ixy="0" ixz="0" iyy="0.106208333333" iyz="0" izz="0.1416666667"/>
-    </inertial>
 
+    
+
+    <joint name="kinect_frame_joint" type="fixed">
+      <origin xyz="$(arg kinect_xyz)" rpy="$(arg kinect_rpy)" />
+      <parent link="base_link" />
+      <child link="camera_link" />
+    </joint>
+
+    <link name="camera_link">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 ${2*M_PI}"/>
+        <geometry>
+          <mesh filename="package://roly_v2/meshes/kinect.dae" />
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.07 0.3 0.09"/>
+        </geometry>
+      </collision>
     </link>
 
-    <joint name="inertial_joint" type="fixed">
-    <origin xyz="0 0 0" rpy="0 0 0" />
-    <parent link="base_link" />
-    <child link="inertial_link" />
-  </joint>
+    <joint name="camera_optical_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+      <parent link="camera_link"/>
+      <child link="camera_frame_optical"/>
+    </joint>
+
+    <link name="camera_frame_optical"/>
+
+    <gazebo reference="camera_link">
+      <sensor type="depth" name="camera1">
+        <always_on>true</always_on>
+        <update_rate>20.0</update_rate>
+
+        <camera>
+          <horizontal_fov>${60.0*M_PI/180.0}</horizontal_fov>
+          <image>
+            <format>R8G8B8</format>
+            <width>640</width>
+            <height>480</height>
+          </image>
+          <clip>
+            <near>0.05</near>
+            <far>8.0</far>
+          </clip>
+        </camera>
+
+        <plugin name="kinect_camera_controller" filename="libgazebo_ros_openni_kinect.so">
+          <cameraName>/roly_v2/camera</cameraName>
+          <alwaysOn>true</alwaysOn>
+          <updateRate>10</updateRate>
+          <imageTopicName>rgb/image_raw</imageTopicName>
+          <depthImageTopicName>depth/image_raw</depthImageTopicName>
+          <pointCloudTopicName>depth/points</pointCloudTopicName>
+          <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+          <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+          <frameName>camera_frame_optical</frameName>
+          <baseline>0.1</baseline>
+          <distortion_k1>0.0</distortion_k1>
+          <distortion_k2>0.0</distortion_k2>
+          <distortion_k3>0.0</distortion_k3>
+          <distortion_t1>0.0</distortion_t1>
+          <distortion_t2>0.0</distortion_t2>
+          <pointCloudCutoff>0.4</pointCloudCutoff>
+          <robotNamespace>/</robotNamespace>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+<!--*******************************************************************************************-->
+
+    <gazebo>
+     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/</robotNamespace>
+      <legacynodens>true</legacynodens>
+     </plugin>
+    </gazebo>
 
 
- <!-- Agregando ruedas--> 
-<!--*******************************************-->
-
-<link name="link_right_wheel_rear">
-<visual name="link_right_wheel_rear_visual">
-<origin rpy="0 0 0" xyz="0 0 0"/>
-<geometry>
-<mesh filename="package://roly_v2/meshes/Llanta.dae" />
-</geometry>
-</visual>
-
-<collision name="link_right_wheel_rear_collision">
-<origin rpy="1.57 1.57 0" xyz="0 0 0"/>
-<geometry>
-<cylinder length="0.0741359" radius="0.106478"/>
-</geometry>
-</collision>
-
-<inertial>
-<mass value="0.2"/>
-<origin rpy="1.570796327 1.570796327 0" xyz="0 0 0"/>
-<inertia ixx="0.000658478" ixy="0" ixz="0" iyy="0.000658478" iyz="0" izz="0.001133756"/>
-</inertial>
-</link>
-
-<joint name="joint_right_wheel_rear" type="continuous">
-<origin rpy="0 0 0" xyz="-0.245 -0.14 0.03"/>
-<child link="link_right_wheel_rear"/>
-<parent link="base_link"/>
-<axis xyz="0 1 0"/>
-<limit effort="10000" velocity="1000"/>
-<joint_properties damping="1.0" friction="1.0"/>
-</joint>
-
-<transmission name="$trans_right_wheel_rear">
-<type>transmission_interface/SimpleTransmission</type>
-<joint name="joint_right_wheel_rear">
-<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-</joint>
-<actuator name="actuator_right_wheel_rear">
-<mechanicalReduction>1</mechanicalReduction>
-</actuator>
-</transmission>
-
-<!--*********************************************************************************************-->
-
-<link name="link_left_wheel_rear">
-<visual name="link_left_wheel_rear_visual">
-<origin rpy="0 0 0" xyz="0 0 0"/>
-<geometry>
-<mesh filename="package://roly_v2/meshes/Llanta.dae" />
-</geometry>
-</visual>
-
-<collision name="link_left_wheel_rear_collision">
-<origin rpy="1.57 1.57 0" xyz="0 0 0"/>
-<geometry>
-<cylinder length="0.0741359" radius="0.106478"/>
-</geometry>
-</collision>
-
-<inertial>
-<mass value="0.2"/>
-<origin rpy="1.570796327 1.570796327 0" xyz="0 0 0"/>
-<inertia ixx="0.000658478" ixy="0" ixz="0" iyy="0.000658478" iyz="0" izz="0.001133756"/>
-</inertial>
-</link>
-
-<joint name="joint_left_wheel_rear" type="continuous">
-<origin rpy="0 0 0" xyz="-0.245 0.22 0.03"/>
-<child link="link_left_wheel_rear"/>
-<parent link="base_link"/>
-<axis xyz="0 1 0"/>
-<limit effort="10000" velocity="1000"/>
-<joint_properties damping="1.0" friction="1.0"/>
-</joint>
-
-<transmission name="$trans_left_wheel_rear">
-<type>transmission_interface/SimpleTransmission</type>
-<joint name="joint_left_wheel_rear">
-<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-</joint>
-<actuator name="actuator_right_wheel_rear">
-<mechanicalReduction>1</mechanicalReduction>
-</actuator>
-</transmission>
-
-<!--****************************************************-->
-
-<link name="link_right_wheel_front">
-<visual name="link_right_wheel_front_visual">
-<origin rpy="0 0 0" xyz="0 0 0"/>
-<geometry>
-<mesh filename="package://roly_v2/meshes/Llanta.dae" />
-</geometry>
-</visual>
-
-<collision name="link_right_wheel_front_collision">
-<origin rpy="1.57 1.57 0" xyz="0 0 0"/>
-<geometry>
-<cylinder length="0.0741359" radius="0.106478"/>
-</geometry>
-</collision>
-
-<inertial>
-<mass value="0.2"/>
-<origin rpy="1.570796327 1.570796327 0" xyz="0 0 0"/>
-<inertia ixx="0.000658478" ixy="0" ixz="0" iyy="0.000658478" iyz="0" izz="0.001133756"/>
-</inertial>
-</link>
-
-<joint name="joint_right_wheel_front" type="continuous">
-<origin rpy="0 0 0" xyz="0.138 -0.14 0.03"/>
-<child link="link_right_wheel_front"/>
-<parent link="base_link"/>
-<axis xyz="0 1 0"/>
-<limit effort="10000" velocity="1000"/>
-<joint_properties damping="1.0" friction="1.0"/>
-</joint>
-
-<transmission name="$trans_right_wheel_front">
-<type>transmission_interface/SimpleTransmission</type>
-<joint name="joint_right_wheel_front">
-<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-</joint>
-<actuator name="actuator_right_wheel_rear">
-<mechanicalReduction>1</mechanicalReduction>
-</actuator>
-</transmission>
-<!--*********************************************************-->
-
-<link name="link_left_wheel_front">
-<visual name="link_left_wheel_front_visual">
-<origin rpy="0 0 0" xyz="0 0 0"/>
-<geometry>
-<mesh filename="package://roly_v2/meshes/Llanta.dae" />
-</geometry>
-</visual>
-
-<collision name="link_left_wheel_front_collision">
-<origin rpy="1.57 1.57 0" xyz="0 0 0"/>
-<geometry>
-<cylinder length="0.0741359" radius="0.106478"/>
-</geometry>
-</collision>
-
-<inertial>
-<mass value="0.2"/>
-<origin rpy="1.570796327 1.570796327 0" xyz="0 0 0"/>
-<inertia ixx="0.000658478" ixy="0" ixz="0" iyy="0.000658478" iyz="0" izz="0.001133756"/>
-</inertial>
-</link>
 
 
-<joint name="joint_left_wheel_front" type="continuous">
-<origin rpy="0 0 0" xyz="0.138 0.22 0.03"/>
-<child link="link_left_wheel_front"/>
-<parent link="base_link"/>
-<axis xyz="0 1 0"/>
-<limit effort="10000" velocity="1000"/>
-<joint_properties damping="1.0" friction="1.0"/>
-</joint>
+      <!--gazebo>
+        <plugin name="gps_controller" filename="libhector_gazebo_ros_gps.so">
+          <robotNamespace>/</robotNamespace>
+          <updateRate>40</updateRate>
+          <bodyName>base_link</bodyName>
+          <frameId>base_link</frameId>
+          <topicName>navsat/fix</topicName>
+          <velocityTopicName>navsat/vel</velocityTopicName>
+          <referenceLatitude>49.9</referenceLatitude>
+          <referenceLongitude>8.9</referenceLongitude>
+          <referenceHeading>0</referenceHeading>
+          <referenceAltitude>0</referenceAltitude>
+          <drift>0.0001 0.0001 0.0001</drift>
+        </plugin>
+      </gazebo-->
 
-<transmission name="$trans_left_wheel_front">
-<type>transmission_interface/SimpleTransmission</type>
-<joint name="joint_left_wheel_front">
-<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-</joint>
-<actuator name="actuator_right_wheel_rear">
-<mechanicalReduction>1</mechanicalReduction>
-</actuator>
-</transmission>
 
-</robot>
+  </robot>
